@@ -1,25 +1,12 @@
 #Base packages:
 import(methods)
-importFrom("grDevices", "cairo_ps", "col2rgb", "colorRamp", "dev.off",
-             "png", "rgb", "svg", "tiff", "x11")
-importFrom("graphics", "abline", "axis", "box", "hist", "layout",
-             "legend", "lines", "par", "plot", "plot.new", "plot.window",
-             "points", "rect", "segments", "smoothScatter", "strheight",
-             "strwidth", "text", "title")
-importFrom("stats", "Gamma", "as.formula", "coef", "coefficients",
-             "deviance", "dnbinom", "fitted.values", "formula", "glm",
-             "loess", "model.matrix", "optimize", "p.adjust", "pchisq",
-             "predict", "qf", "rchisq", "rnorm", "runif", "terms",
-             "weighted.mean")
-importFrom("utils", "object.size", "packageVersion", "read.delim",
-             "read.table", "write.table")
 
 #CRAN packages:
 import(statmod)
 import(plotrix)
 import(stringr)
-import(SummarizedExperiment)
-import(DESeq2)
+import(SummarizedExperiment);
+import(DESeq2);
 
 #Bioconductor packages:
 import(Biobase)
@@ -37,6 +24,20 @@ importFrom(locfit,locfit)
 importFrom(genefilter,filtered_p)
 importFrom(genefilter,rowVars)
 importFrom(geneplotter,plotMA)
+
+importFrom("grDevices", "cairo_ps", "col2rgb", "colorRamp", "dev.off",
+             "png", "rgb", "svg", "tiff", "x11")
+importFrom("graphics", "abline", "axis", "box", "hist", "layout",
+             "legend", "lines", "par", "plot", "plot.new", "plot.window",
+             "points", "rect", "segments", "smoothScatter", "strheight",
+             "strwidth", "text", "title")
+importFrom("stats", "Gamma", "as.formula", "coef", "coefficients",
+             "deviance", "dnbinom", "fitted.values", "formula", "glm",
+             "loess", "model.matrix", "optimize", "p.adjust", "pchisq",
+             "predict", "qf", "rchisq", "rnorm", "runif", "terms",
+             "weighted.mean")
+importFrom("utils", "object.size", "packageVersion", "read.delim",
+             "read.table", "write.table")
 
 export(
   runJunctionSeqAnalyses,                                 
