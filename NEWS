@@ -1,3 +1,9 @@
+v1.2.4:
+Minor bugfixes (backported from v1.3.4):
+  * Manual updated to reflect changes in the most recent version of QoRTs: the mergeNovelSplices function now automatically calculates size factors, if size factors are not set explicitly.
+  * Fixed typos in the manual.
+  * Bugfix: Basic functionality now works without a GFF file being specified (as per specification)
+
 v1.1.14: 
 Minor bugfixes: (thanks to Warren McGee)
   * When making html summary files with "use.multigene.aggregates" genes set to TRUE,
