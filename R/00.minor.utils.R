@@ -585,19 +585,29 @@ make.evenly.spaced.seq.minor <- function(start,end, approx.ct, num.ticks.per.mai
 ##########################################################################
 ##########################################################################
 
-color2transparentVector <- function(c,t){
-   sapply(c, FUN = color2transparent, t = t)
-}
+
 color2transparent <- function(c,t){
    r <- col2rgb(c,alpha=TRUE)
    return(rgb(r[1],r[2],r[3],t,maxColorValue = 255))
 }
-
+color2transparentVector <- function(c,t){
+   sapply(c, FUN = color2transparent, t = t)
+}
 apply2 <- function( X, MARGIN, FUN, ... ) {
    if( length(MARGIN) > 0 ) 
       apply( X, MARGIN, FUN, ... ) 
    else 
       FUN( X, ... ) }
-      
-      
+
 INTERNAL.NINF.VALUE <- -0.2;
+
+#creates heat-colors.
+heatColors <- function(x,lim=c(min(x,na.rm=TRUE),max(x,na.rm=TRUE)),colorCt = 1000, color.NA = "gray",spectrum = heat.colors){
+   color.spectrum <- rev(spectrum(colorCt + 1));
+   normVal <- (x - lim[1]) / (lim[2] - lim[1]);
+   normVal <- pmax(0,normVal);
+   normVal <- pmin(normVal,1);
+   color.idx <- pmin( floor( normVal * colorCt ) + 1,colorCt);
+   
+   ifelse(is.na(x),color.NA,color.spectrum[color.idx]);
+}

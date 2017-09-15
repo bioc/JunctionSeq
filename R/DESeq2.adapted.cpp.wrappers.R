@@ -15,6 +15,21 @@
 #         and
 #   here: http://github.com/Bioconductor-mirror/DEXSeq/blob/master/DESCRIPTION
 
+COMPILED_COMPONENTS_PACKAGE <- "JunctionSeq";
+
+setJunctionSeqCompiledSourcePackage <- function(PACKAGE = c("JunctionSeq","DESeq2")){
+  PACKAGE = match.arg(PACKAGE);
+  if(PACKAGE == "DESeq2"){
+    DESEQ2VERSTRING <- getNamespaceVersion("DESeq2");
+    DESEQ2VER <- as.integer(strsplit(DESEQ2VERSTRING,".",fixed=TRUE)$version)
+    if(DESEQ2VER[1] != 1){
+      message("WARNING: JunctionSeq is NOT COMPATIBLE with the C++ binaries from DESeq2 v.",DESEQ2VERSTRING);
+    } else if(DESEQ2VER[2] > 16){
+      message("WARNING: JunctionSeq is NOT COMPATIBLE with the C++ binaries from DESeq2 v.",DESEQ2VERSTRING);
+    }
+  }
+  COMPILED_COMPONENTS_PACKAGE <<- PACKAGE;
+}
 
 #From DESeq2:
 # Fit dispersions for negative binomial GLM
@@ -120,15 +135,20 @@ fitDispGridWrapper <- function(y, x, mu, logAlphaPriorMean,
   exp(logAlpha)
 }
 
+
 DESEQ2_HASNT_ECHOED_WARNING <- TRUE;
 DESeq2.gt.1.14 <- function(){
-  out <- as.integer(strsplit(getNamespaceVersion("DESeq2"),".",fixed=TRUE)$version)[1] > 1 || 
-         as.integer(strsplit(getNamespaceVersion("DESeq2"),".",fixed=TRUE)$version)[2] > 14;
-  if(out && DESEQ2_HASNT_ECHOED_WARNING){
-    DESEQ2_HASNT_ECHOED_WARNING <- FALSE;
-    message("NOTE: Autodetected DESeq2 v1.15+. Adding simple weights to C++ function calls.");
+  if(COMPILED_COMPONENTS_PACKAGE == "JunctionSeq"){
+    return(TRUE);
+  } else {
+    out <- as.integer(strsplit(getNamespaceVersion("DESeq2"),".",fixed=TRUE)$version)[1] > 1 || 
+           as.integer(strsplit(getNamespaceVersion("DESeq2"),".",fixed=TRUE)$version)[2] > 14;
+    if(out && DESEQ2_HASNT_ECHOED_WARNING){
+      DESEQ2_HASNT_ECHOED_WARNING <- FALSE;
+      message("NOTE: Autodetected DESeq2 v1.15+. Adding simple weights to C++ function calls.");
+    }
+    return(out);
   }
-  return(out);
 }
 
 
@@ -136,9 +156,9 @@ fitDisp <- function(ySEXP, xSEXP, mu_hatSEXP, log_alphaSEXP, log_alpha_prior_mea
   if(DESeq2.gt.1.14()){
     useWeightsSEXP <- FALSE
     weightsSEXP <- matrix(1, nrow=nrow(ySEXP), ncol=ncol(ySEXP))
-    .Call('DESeq2_fitDisp', PACKAGE = 'DESeq2', ySEXP, xSEXP, mu_hatSEXP, log_alphaSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, min_log_alphaSEXP, kappa_0SEXP, tolSEXP, maxitSEXP, use_priorSEXP, weightsSEXP, useWeightsSEXP)
+    .Call('DESeq2_fitDisp', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, mu_hatSEXP, log_alphaSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, min_log_alphaSEXP, kappa_0SEXP, tolSEXP, maxitSEXP, use_priorSEXP, weightsSEXP, useWeightsSEXP)
   } else {
-    .Call('DESeq2_fitDisp', PACKAGE = 'DESeq2', ySEXP, xSEXP, mu_hatSEXP, log_alphaSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, min_log_alphaSEXP, kappa_0SEXP, tolSEXP, maxitSEXP, use_priorSEXP)
+    .Call('DESeq2_fitDisp', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, mu_hatSEXP, log_alphaSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, min_log_alphaSEXP, kappa_0SEXP, tolSEXP, maxitSEXP, use_priorSEXP)
   }
   
 }
@@ -147,23 +167,23 @@ fitBeta <- function(ySEXP, xSEXP, nfSEXP, alpha_hatSEXP, contrastSEXP, beta_matS
   if(DESeq2.gt.1.14()){
     useWeightsSEXP <- FALSE
     weightsSEXP <- matrix(1, nrow=nrow(ySEXP), ncol=ncol(ySEXP))
-    .Call('DESeq2_fitBeta', PACKAGE = 'DESeq2', ySEXP, xSEXP, nfSEXP, alpha_hatSEXP, contrastSEXP, beta_matSEXP, lambdaSEXP, weightsSEXP, useWeightsSEXP, tolSEXP, maxitSEXP, useQRSEXP)
+    .Call('DESeq2_fitBeta', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, nfSEXP, alpha_hatSEXP, contrastSEXP, beta_matSEXP, lambdaSEXP, weightsSEXP, useWeightsSEXP, tolSEXP, maxitSEXP, useQRSEXP)
   } else {
-    .Call('DESeq2_fitBeta', PACKAGE = 'DESeq2', ySEXP, xSEXP, nfSEXP, alpha_hatSEXP, contrastSEXP, beta_matSEXP, lambdaSEXP, tolSEXP, maxitSEXP, useQRSEXP)
+    .Call('DESeq2_fitBeta', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, nfSEXP, alpha_hatSEXP, contrastSEXP, beta_matSEXP, lambdaSEXP, tolSEXP, maxitSEXP, useQRSEXP)
   }
 }
 
 #rlogGrid <- function(ySEXP, nfSEXP, betaSEXP, alphaSEXP, interceptSEXP, bgridSEXP, betapriorvarSEXP) {
-#    .Call('DESeq2_rlogGrid', PACKAGE = 'DESeq2', ySEXP, nfSEXP, betaSEXP, alphaSEXP, interceptSEXP, bgridSEXP, betapriorvarSEXP)
+#    .Call('DESeq2_rlogGrid', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, nfSEXP, betaSEXP, alphaSEXP, interceptSEXP, bgridSEXP, betapriorvarSEXP)
 #}
 
 fitDispGrid <- function(ySEXP, xSEXP, mu_hatSEXP, disp_gridSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, use_priorSEXP) {
   if(DESeq2.gt.1.14()){
     useWeightsSEXP <- FALSE
     weightsSEXP <- matrix(1, nrow=nrow(ySEXP), ncol=ncol(ySEXP))
-    .Call('DESeq2_fitDispGrid', PACKAGE = 'DESeq2', ySEXP, xSEXP, mu_hatSEXP, disp_gridSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, use_priorSEXP, weightsSEXP, useWeightsSEXP)    
+    .Call('DESeq2_fitDispGrid', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, mu_hatSEXP, disp_gridSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, use_priorSEXP, weightsSEXP, useWeightsSEXP)    
   } else {
-    .Call('DESeq2_fitDispGrid', PACKAGE = 'DESeq2', ySEXP, xSEXP, mu_hatSEXP, disp_gridSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, use_priorSEXP)
+    .Call('DESeq2_fitDispGrid', PACKAGE = COMPILED_COMPONENTS_PACKAGE, ySEXP, xSEXP, mu_hatSEXP, disp_gridSEXP, log_alpha_prior_meanSEXP, log_alpha_prior_sigmasqSEXP, use_priorSEXP)
   }
 
 }

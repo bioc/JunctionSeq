@@ -1,3 +1,9 @@
+v1.7.5:
+Structural revamp:
+  * Changes to DESeq2 have made it necessary to copy C++ code from DESeq2. As a result: JunctionSeq once again requires compilation.
+  * Minor bugfixes.
+  * Added more useful error messages when encountering incompatible GFF / count files.
+
 v1.3.4: 
 Minor bugfixes:
 

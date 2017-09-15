@@ -615,7 +615,7 @@ readJunctionSeqCounts <- function(countfiles = NULL, countdata = NULL,
    dcounts <- sapply( lf, `[[`, "V2" )
    rownames(dcounts) <- lf[[1]][,1]
    dcounts <- dcounts[ substr(rownames(dcounts),1,1)!="_", ]
-
+   
    bin.type <- sapply( rownames(dcounts), 
                      function(x){
                         substr(strsplit(x, ":",fixed=TRUE)[[1]][2],1,1)
@@ -626,6 +626,7 @@ readJunctionSeqCounts <- function(countfiles = NULL, countdata = NULL,
                      })
    
    if(isTRUE(verbose)) message(paste0("---> Extracted counts. Found ",dim(dcounts)[1]," features so far."));  
+   original.dcount.nrow <- nrow(dcounts);
    
    geneCountTable <- dcounts[bin.type == "A",, drop=FALSE]
    rownames(geneCountTable) <- sapply(strsplit(rownames(geneCountTable), ":"),"[[",1)
@@ -701,7 +702,15 @@ readJunctionSeqCounts <- function(countfiles = NULL, countdata = NULL,
       
       matching <- match(rownames(dcounts), rownames(exoninfo))
       if(any(is.na(matching))){
-         stop("FATAL ERROR! Annotation file appears to be missing information! Are you sure you are using the correct flattened annotation file, created by prepare_annotation_with_splices.py?")
+        message("FATAL ERROR! Annotation file appears to be missing information! More information below:");
+        message("   Count files have: ",original.dcount.nrow," rows.");
+        message("   Flat GFF file has: ",nrow(exoninfo)," rows.");
+        if(original.dcount.nrow != nrow(exoninfo)) message("   WARNING: number of count file rows does not match flattned GFF file! One of the files may have been truncated, or may have been created using different strandedness rules.")
+        nomatch <- which(is.na(matching));
+        message("   Missing information on ",length(nomatch),"/",nrow(dcounts)," features.");
+        nomatchSubset <- nomatch[1:min(c(10,length(nomatch)))]
+        message("   A few of the missing feature ID's: [\"",paste0(rownames(dcounts)[nomatchSubset],collapse="\",\""),"\"]");
+        stop("FATAL ERROR! Annotation file appears to be missing information! Are you sure you are using the correct flattened annotation file, created by the QoRTs QC command?")
       }
       if(isTRUE(verbose)) message("-----> creating jscs...");  
       jscs <- newJunctionSeqCountSet(countData=dcounts, geneCountData = geneCountTable, design=design, geneIDs=genesrle, countbinIDs=exons, featureIntervals=exoninfo[matching,], transcripts=transcripts[matching])
