@@ -142,8 +142,9 @@ JunctionSeq is now part of Bioconductor, and will be included in the next releas
 If you are on the Devel branch of R (currently v3.3), then you can install
 JunctionSeq as part of the Devel branch of Bioconductor, using the commands (in R):
 <<biocInstall, eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("JunctionSeq")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("JunctionSeq")
 @
 
 If you do not wish to work in the (often unstable) devel Bioconductor branch, you 
@@ -167,17 +168,17 @@ install.packages("Hmisc");
 
 #Bioconductor dependencies:
 source("http://bioconductor.org/biocLite.R");
-biocLite();
-biocLite("Biobase");
-biocLite("BiocGenerics");
-biocLite("BiocParallel");
-biocLite("GenomicRanges");
-biocLite("IRanges");
-biocLite("S4Vectors");
-biocLite("genefilter");
-biocLite("geneplotter");
-biocLite("SummarizedExperiment");
-biocLite("DESeq2");
+BiocManager::install();
+BiocManager::install("Biobase");
+BiocManager::install("BiocGenerics");
+BiocManager::install("BiocParallel");
+BiocManager::install("GenomicRanges");
+BiocManager::install("IRanges");
+BiocManager::install("S4Vectors");
+BiocManager::install("genefilter");
+BiocManager::install("geneplotter");
+BiocManager::install("SummarizedExperiment");
+BiocManager::install("DESeq2");
 
 install.packages("http://hartleys.github.io/JunctionSeq/install/JunctionSeq_LATEST.tar.gz",
                  repos = NULL, 
